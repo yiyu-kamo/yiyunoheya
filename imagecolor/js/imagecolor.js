@@ -61,22 +61,22 @@ function analyzeImage(file) {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-      const colorCount = {};
-      for (let i = 0; i < imageData.length; i += 4) {
-        const hex = rgbToHex(imageData[i], imageData[i + 1], imageData[i + 2]);
-        colorCount[hex] = (colorCount[hex] || 0) + 1;
+      const colorMap = {};
+      for (let i = 0; i < data.length; i += 4) {
+        const hex = rgbToHex(data[i], data[i + 1], data[i + 2]);
+        colorMap[hex] = (colorMap[hex] || 0) + 1;
       }
 
-      const sortedColors = Object.entries(colorCount).sort((a, b) => b[1] - a[1]);
-      const labels = sortedColors.map(([hex]) => hex);
-      const counts = sortedColors.map(([, count]) => count);
+      const sorted = Object.entries(colorMap).sort((a, b) => b[1] - a[1]);
+      const labels = sorted.map(([hex]) => hex);
+      const counts = sorted.map(([, count]) => count);
       const total = counts.reduce((a, b) => a + b, 0);
 
       drawPieChart(labels.slice(0, 10), counts.slice(0, 10));
       drawBarChart(labels, counts);
-      drawColorTable(sortedColors, total);
+      drawColorTable(sorted, total);
       removeLoader();
     };
     img.src = e.target.result;
@@ -98,6 +98,8 @@ function rgbToHex(r, g, b) {
 }
 
 function drawPieChart(labels, data) {
+  if (typeof Chart === "undefined") return alert("Chart.js が読み込まれていません。");
+
   const ctx = document.getElementById("pieChart")?.getContext("2d");
   if (!ctx) return;
   if (window.pieChart && typeof window.pieChart.destroy === "function") {
@@ -105,29 +107,34 @@ function drawPieChart(labels, data) {
   }
   window.pieChart = new Chart(ctx, {
     type: "pie",
-    data: {
-      labels,
-      datasets: [{ data, backgroundColor: labels }],
-    },
-    options: { responsive: true },
+    data: { labels, datasets: [{ data, backgroundColor: labels }] },
+    options: { responsive: true }
   });
 }
 
 function drawBarChart(labels, data) {
+  if (typeof Chart === "undefined") return alert("Chart.js が読み込まれていません。");
+
   const wrapper = document.getElementById("barChartWrapper");
   const canvas = document.getElementById("barChart");
   if (!wrapper || !canvas) return;
+
   wrapper.style.overflowX = "auto";
   wrapper.style.maxHeight = "500px";
   wrapper.style.border = "1px solid #ccc";
 
-  // 1色あたりのバー幅（単位px） ※見やすいサイズ
   const barWidth = 40;
-  const totalWidth = labels.length * barWidth;
-  canvas.width = totalWidth;
+  const maxBars = 1000;
+  const shownLabels = labels.slice(0, maxBars);
+  const shownData = data.slice(0, maxBars);
+
+  const width = Math.max(shownLabels.length * barWidth, 100);
+  canvas.width = width;
   canvas.height = 500;
 
   const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
   if (window.barChart && typeof window.barChart.destroy === "function") {
     window.barChart.destroy();
   }
@@ -135,13 +142,12 @@ function drawBarChart(labels, data) {
   window.barChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels,
-      datasets: [{ data, backgroundColor: labels }],
+      labels: shownLabels,
+      datasets: [{ data: shownData, backgroundColor: shownLabels }]
     },
     options: {
       responsive: false,
       maintainAspectRatio: false,
-      indexAxis: "x",
       scales: {
         y: { beginAtZero: true },
         x: {
