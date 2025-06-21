@@ -21,9 +21,9 @@ function showLoader() {
     bar.style.width = "0%";
     bar.style.background = "#0078D7";
     bar.style.transition = "width 0.2s linear";
-    const charts = document.getElementById("pieChart");
-    if (charts && charts.parentNode) {
-      charts.parentNode.insertBefore(bar, charts);
+    const target = document.getElementById("pieChart");
+    if (target && target.parentNode) {
+      target.parentNode.insertBefore(bar, target);
     }
   } else {
     bar.style.width = "0%";
@@ -99,10 +99,7 @@ function analyzeImage(file) {
 function rgbToHex(r, g, b) {
   return (
     "#" +
-    [r, g, b]
-      .map((x) => x.toString(16).padStart(2, "0"))
-      .join("")
-      .toUpperCase()
+    [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("").toUpperCase()
   );
 }
 
