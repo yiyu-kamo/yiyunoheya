@@ -106,7 +106,9 @@ function rgbToHex(r, g, b) {
 function drawPieChart(labels, data) {
   const ctx = document.getElementById("pieChart")?.getContext("2d");
   if (!ctx) return;
-  if (window.pieChart) window.pieChart.destroy();
+  if (window.pieChart && typeof window.pieChart.destroy === "function") {
+    window.pieChart.destroy();
+  }
   window.pieChart = new Chart(ctx, {
     type: "pie",
     data: {
@@ -120,7 +122,9 @@ function drawPieChart(labels, data) {
 function drawBarChart(labels, data) {
   const ctx = document.getElementById("barChart")?.getContext("2d");
   if (!ctx) return;
-  if (window.barChart) window.barChart.destroy();
+  if (window.barChart && typeof window.barChart.destroy === "function") {
+    window.barChart.destroy();
+  }
   window.barChart = new Chart(ctx, {
     type: "bar",
     data: {
