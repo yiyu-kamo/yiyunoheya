@@ -1,62 +1,179 @@
-<!DOCTYPE html>
+function checkInput() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      showLoader();
+      analyzeImage(file);
+    }
+  };
+  input.click();
+}
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<meta http-equiv="Content-Script-Type" content="text/javascript" />
-<meta name="author" content="" />
-<meta name="description" content="" />
-<meta name="keywords" content="" />
-<link rel="icon" type="image/png" href="https://yiyu-kamo.github.io/yiyunoheya/image/icon.png">
-<title>画像の色をグラフ化 - いゆのへや</title>
+function showLoader() {
+  let bar = document.getElementById("loaderBar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "loaderBar";
+    bar.style.height = "6px";
+    bar.style.width = "0%";
+    bar.style.background = "#0078D7";
+    bar.style.transition = "width 0.2s linear";
+    const charts = document.getElementById("pieChart");
+    if (charts && charts.parentNode) {
+      charts.parentNode.insertBefore(bar, charts);
+    }
+  } else {
+    bar.style.width = "0%";
+  }
+}
 
-<link rel="stylesheet" href="https://yiyu-kamo.github.io/yiyunoheya/style.css" type="text/css">
+function updateLoader(percent) {
+  const bar = document.getElementById("loaderBar");
+  if (bar) {
+    bar.style.width = Math.min(percent, 100) + "%";
+  }
+}
 
-<script type="text/javascript" src="https://yiyu-kamo.github.io/yiyunoheya/imagecolor/imagecolor.js" charset="UTF-8"></script>
-</head>
+function removeLoader() {
+  const bar = document.getElementById("loaderBar");
+  if (bar) {
+    bar.style.width = "100%";
+    setTimeout(() => bar.remove(), 500);
+  }
+}
 
-<body>
-<div id="wrapper">
-  <div id="header">
-    <h1>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/">いゆのへや</a>
-    </h1>
-    <h2>名古屋鉄道の車内放送シミュレーターなど</h2>
-  </div>
-  <div id="contents" class="heightLine" style="height: 5000px;">
-    <p class="tree_menu">
-    <hr>
-    <h3>画像の色をグラフ化</h3>
-    <canvas id="pieChart"></canvas>
-    <canvas id="barChart"></canvas>
-    <div id="colorList"></div>
-    <ul>
-    <input type="button" id="imageuplode" value="　画像をアップロード　" onclick="checkInput()" style="font-size:16px;" />
-    <br />
-    </ul>
-    <h3>このシミュレーターについて</h3>
-    <ul>
-      このシミュレーターは、アップロードした画像の色をグラフに表すシミュレーターです。
-    </ul>
-    <br>
-  </div>
-  <div id="menu" class="heightLine" style="height: 5000px;">
-    <ul>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/">トップ</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/profile/">プロフィール</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/meitetsuannounce/">名鉄車内放送シミュレーター</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/inquiry/">お問い合わせ</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/recruiting/">募集</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/links/">リンク</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/termsofuse/">利用規約とお願い</a>
-      <a href="https://yiyu-kamo.github.io/yiyunoheya/imagecolor/">画像の色をグラフ化</a>
-      <a href="https://ameblo.jp/yiyu-kamo/">ブログ</a>
-    </ul>
-  </div>
-  <div id="footer">
-    <p>Copyright © 2024 いゆかも工房 All rights reserved.</p>
-  </div>
-</div>
-</body>
-</html>
+function analyzeImage(file) {
+  const reader = new FileReader();
+
+  reader.onprogress = (e) => {
+    if (e.lengthComputable) {
+      const percent = (e.loaded / e.total) * 100;
+      updateLoader(percent);
+    }
+  };
+
+  reader.onload = (e) => {
+    updateLoader(100);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+      const colorCount = {};
+      for (let i = 0; i < imageData.length; i += 4) {
+        const hex = rgbToHex(imageData[i], imageData[i + 1], imageData[i + 2]);
+        colorCount[hex] = (colorCount[hex] || 0) + 1;
+      }
+
+      const sortedColors = Object.entries(colorCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+      const labels = sortedColors.map(([hex]) => hex);
+      const counts = sortedColors.map(([, count]) => count);
+      const total = counts.reduce((a, b) => a + b, 0);
+
+      drawPieChart(labels, counts);
+      drawBarChart(labels, counts);
+      drawColorTable(sortedColors, total);
+      removeLoader();
+    };
+    img.src = e.target.result;
+  };
+
+  reader.onerror = () => {
+    removeLoader();
+    alert("画像の読み込み中にエラーが発生しました。");
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function rgbToHex(r, g, b) {
+  return (
+    "#" +
+    [r, g, b]
+      .map((x) => x.toString(16).padStart(2, "0"))
+      .join("")
+      .toUpperCase()
+  );
+}
+
+function drawPieChart(labels, data) {
+  const ctx = document.getElementById("pieChart")?.getContext("2d");
+  if (!ctx) return;
+  if (window.pieChart) window.pieChart.destroy();
+  window.pieChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: labels }],
+    },
+    options: { responsive: true },
+  });
+}
+
+function drawBarChart(labels, data) {
+  const ctx = document.getElementById("barChart")?.getContext("2d");
+  if (!ctx) return;
+  if (window.barChart) window.barChart.destroy();
+  window.barChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{ data, backgroundColor: labels }],
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } },
+    },
+  });
+}
+
+function drawColorTable(colorData, total) {
+  const container = document.getElementById("colorList");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.style.borderCollapse = "collapse";
+  table.style.marginTop = "1em";
+
+  const thead = document.createElement("tr");
+  ["色", "16進カラー", "割合"].forEach((text) => {
+    const th = document.createElement("th");
+    th.textContent = text;
+    th.style.borderBottom = "2px solid #888";
+    th.style.padding = "4px 8px";
+    thead.appendChild(th);
+  });
+  table.appendChild(thead);
+
+  colorData.forEach(([hex, count]) => {
+    const tr = document.createElement("tr");
+
+    const preview = document.createElement("td");
+    preview.innerHTML = `<div style="width:20px;height:20px;background:${hex};border:1px solid #444;"></div>`;
+    preview.style.padding = "4px";
+
+    const code = document.createElement("td");
+    code.textContent = hex;
+    code.style.padding = "4px 8px";
+
+    const percent = document.createElement("td");
+    percent.textContent = ((count / total) * 100).toFixed(1) + "%";
+    percent.style.padding = "4px 8px";
+
+    [preview, code, percent].forEach((td) => tr.appendChild(td));
+    table.appendChild(tr);
+  });
+
+  container.appendChild(table);
+}
