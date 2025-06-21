@@ -32,9 +32,7 @@ function showLoader() {
 
 function updateLoader(percent) {
   const bar = document.getElementById("loaderBar");
-  if (bar) {
-    bar.style.width = Math.min(percent, 100) + "%";
-  }
+  if (bar) bar.style.width = Math.min(percent, 100) + "%";
 }
 
 function removeLoader() {
@@ -47,7 +45,6 @@ function removeLoader() {
 
 function analyzeImage(file) {
   const reader = new FileReader();
-
   reader.onprogress = (e) => {
     if (e.lengthComputable) {
       const percent = (e.loaded / e.total) * 100;
@@ -72,15 +69,13 @@ function analyzeImage(file) {
         colorCount[hex] = (colorCount[hex] || 0) + 1;
       }
 
-      const sortedColors = Object.entries(colorCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
+      const sortedColors = Object.entries(colorCount).sort((a, b) => b[1] - a[1]);
 
       const labels = sortedColors.map(([hex]) => hex);
       const counts = sortedColors.map(([, count]) => count);
       const total = counts.reduce((a, b) => a + b, 0);
 
-      drawPieChart(labels, counts);
+      drawPieChart(labels.slice(0, 10), counts.slice(0, 10));
       drawBarChart(labels, counts);
       drawColorTable(sortedColors, total);
       removeLoader();
@@ -120,6 +115,11 @@ function drawPieChart(labels, data) {
 }
 
 function drawBarChart(labels, data) {
+  const wrapper = document.getElementById("barChartWrapper");
+  if (wrapper) {
+    wrapper.style.overflowX = "auto";
+    wrapper.style.paddingBottom = "12px";
+  }
   const ctx = document.getElementById("barChart")?.getContext("2d");
   if (!ctx) return;
   if (window.barChart && typeof window.barChart.destroy === "function") {
@@ -133,7 +133,11 @@ function drawBarChart(labels, data) {
     },
     options: {
       responsive: true,
-      scales: { y: { beginAtZero: true } },
+      maintainAspectRatio: false,
+      indexAxis: "x",
+      scales: {
+        y: { beginAtZero: true },
+      },
     },
   });
 }
@@ -142,10 +146,13 @@ function drawColorTable(colorData, total) {
   const container = document.getElementById("colorList");
   if (!container) return;
   container.innerHTML = "";
+  container.style.maxHeight = "500px";
+  container.style.overflowY = "auto";
 
   const table = document.createElement("table");
   table.style.borderCollapse = "collapse";
   table.style.marginTop = "1em";
+  table.style.width = "100%";
 
   const thead = document.createElement("tr");
   ["色", "16進カラー", "割合"].forEach((text) => {
