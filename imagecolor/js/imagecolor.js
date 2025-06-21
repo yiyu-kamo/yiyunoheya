@@ -74,9 +74,9 @@ function analyzeImage(file) {
       const counts = sortedColors.map(([, count]) => count);
       const total = counts.reduce((a, b) => a + b, 0);
 
-      drawPieChart(labels.slice(0, 10), counts.slice(0, 10)); // 円グラフは上位10色
-      drawBarChart(labels, counts); // 全色棒グラフ
-      drawColorTable(sortedColors, total); // テーブルも全色
+      drawPieChart(labels.slice(0, 10), counts.slice(0, 10));
+      drawBarChart(labels, counts);
+      drawColorTable(sortedColors, total);
       removeLoader();
     };
     img.src = e.target.result;
@@ -115,13 +115,19 @@ function drawPieChart(labels, data) {
 
 function drawBarChart(labels, data) {
   const wrapper = document.getElementById("barChartWrapper");
-  if (wrapper) {
-    wrapper.style.overflowX = "auto";
-    wrapper.style.maxHeight = "500px";
-  }
+  const canvas = document.getElementById("barChart");
+  if (!wrapper || !canvas) return;
+  wrapper.style.overflowX = "auto";
+  wrapper.style.maxHeight = "500px";
+  wrapper.style.border = "1px solid #ccc";
 
-  const ctx = document.getElementById("barChart")?.getContext("2d");
-  if (!ctx) return;
+  // 1色あたりのバー幅（単位px） ※見やすいサイズ
+  const barWidth = 40;
+  const totalWidth = labels.length * barWidth;
+  canvas.width = totalWidth;
+  canvas.height = 500;
+
+  const ctx = canvas.getContext("2d");
   if (window.barChart && typeof window.barChart.destroy === "function") {
     window.barChart.destroy();
   }
@@ -133,14 +139,23 @@ function drawBarChart(labels, data) {
       datasets: [{ data, backgroundColor: labels }],
     },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       indexAxis: "x",
       scales: {
         y: { beginAtZero: true },
-        x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } },
+        x: {
+          ticks: {
+            autoSkip: false,
+            maxRotation: 90,
+            minRotation: 45
+          }
+        }
       },
-    },
+      plugins: {
+        legend: { display: false }
+      }
+    }
   });
 }
 
