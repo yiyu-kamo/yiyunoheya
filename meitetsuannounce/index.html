@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="author" content="" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<title>名古屋鉄道車内放送シミュレーター - いゆのへや</title>
+
+<link rel="stylesheet" href="https://yiyu-kamo.github.io/yiyunoheya/style.css" type="text/css">
+
+<script type="text/javascript" src="https://yiyu-kamo.github.io/meitetsuannounce/soundsetting.js" charset="UTF-8"></script>
+<script type="text/javascript" src="https://yiyu-kamo.github.io/meitetsuannounce/meitetsuannounce.js" charset="UTF-8"></script>
+</head>
+
+<body>
+<div id="wrapper">
+  <div id="header">
+    <h1>
+      <a href="index.html">いゆのへや</a>
+    </h1>
+    <h2>名古屋鉄道の車内放送シミュレーターなど</h2>
+  </div>
+  <div id="contents" class="heightLine" style="height: 5000px;">
+    <p class="tree_menu">
+      <a href="index.html">トップ</a>
+         » 
+      <a href="meitetsuannounce.html">シミュレーター</a>
+    <hr>
+    <h3>名古屋鉄道 車内放送シミュレーター</h3>
+    <table border="0">
+      <tr>
+        <td>
+          <div style="float:left;">
+            無音<br />
+            <select size='5' id='partsListSelect1' style='font-size:1em;' ondblclick='setSoundParts1()'>
+              <script type="text/javascript">
+                  var i;
+                  for (i = 0; i < soundDataMuon.length; i++) {
+                      document.write("<option value=''>" + soundDataMuon[i][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            チャイム<br />
+            <select size='5' id='partsListSelect2' style='font-size:1em;' ondblclick='setSoundParts2()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataChime.length; j++) {
+                      document.write("<option value=''>" + soundDataChime[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            その他日本語放送<br />
+            <select size='5' id='partsListSelect3' style='font-size:1em;' ondblclick='setSoundParts3()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataJPN.length; j++) {
+                      document.write("<option value=''>" + soundDataJPN[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            その他英語放送<br />
+            <select size='5' id='partsListSelect4' style='font-size:1em;' ondblclick='setSoundParts4()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataENG.length; j++) {
+                      document.write("<option value=''>" + soundDataENG[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            駅名日本語<br />
+            <select size='5' id='partsListSelect5one' style='font-size:1em;' ondblclick='setSoundParts5one()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataEkimeiJPN.length; j++) {
+                      document.write("<option value=''>" + soundDataEkimeiJPN[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            駅名英語<br />
+            <select size='5' id='partsListSelect5two' style='font-size:1em;' ondblclick='setSoundParts5two()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataEkimeiENG.length; j++) {
+                      document.write("<option value=''>" + soundDataEkimeiENG[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            駅名・です<br />
+            <select size='5' id='partsListSelect6' style='font-size:1em;' ondblclick='setSoundParts6()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataEkimeiDesu.length; j++) {
+                      document.write("<option value=''>" + soundDataEkimeiDesu[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            駅名・に<br />
+            <select size='5' id='partsListSelect7' style='font-size:1em;' ondblclick='setSoundParts7()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataEkimeiNi.length; j++) {
+                      document.write("<option value=''>" + soundDataEkimeiNi[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            駅名・を出ますと<br />
+            <select size='5' id='partsListSelect8' style='font-size:1em;' ondblclick='setSoundParts8()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataEkimeiWoDemasuto.length; j++) {
+                      document.write("<option value=''>" + soundDataEkimeiWoDemasuto[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            駅名・行きです<br />
+            <select size='5' id='partsListSelect9' style='font-size:1em;' ondblclick='setSoundParts9()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataEkimeiYukiDesu.length; j++) {
+                      document.write("<option value=''>" + soundDataEkimeiYukiDesu[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            乗換案内日本語<br />
+            <select size='5' id='partsListSelect10one' style='font-size:1em;' ondblclick='setSoundParts10one()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataNorikaeAnnaiJPN.length; j++) {
+                      document.write("<option value=''>" + soundDataNorikaeAnnaiJPN[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            乗換案内英語<br />
+            <select size='5' id='partsListSelect10two' style='font-size:1em;' ondblclick='setSoundParts10two()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataNorikaeAnnaiENG.length; j++) {
+                      document.write("<option value=''>" + soundDataNorikaeAnnaiENG[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            種別<br />
+            <select size='5' id='partsListSelect11' style='font-size:1em;' ondblclick='setSoundParts11()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataShubetsu.length; j++) {
+                      document.write("<option value=''>" + soundDataShubetsu[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            特別車<br />
+            <select size='5' id='partsListSelect12' style='font-size:1em;' ondblclick='setSoundParts12()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataTokubetsuSha.length; j++) {
+                      document.write("<option value=''>" + soundDataTokubetsuSha[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+          <div style="float:left;">
+            止まります系<br />
+            <select size='5' id='partsListSelect13' style='font-size:1em;' ondblclick='setSoundParts13()'>
+              <script type="text/javascript">
+                  var j;
+                  for (j = 0; j < soundDataTomarimasu.length; j++) {
+                      document.write("<option value=''>" + soundDataTomarimasu[j][1] + "</option>");
+                  }
+              </script>
+            </select>
+          </div>
+        </td>
+        <td>
+          放送文章<br />
+          <textarea id="inputTextarea" rows="100" cols="30" style='font-size:1em;'></textarea>
+        </td>
+      </tr>
+    </table>
+    <br />
+
+    <ul>
+    <input type="button" id="announceStartButton" value="　★自動放送開始★　" onclick="checkInput()" style='font-size:16px;' />
+     <input type="button" id="announceStartButton" value="　リセット　" onclick="resetInput()" style='font-size:16px;' />　
+    <br />
+    </ul>
+
+    <audio id="audio0" src="sound/null-250.mp3" height='0'></audio>
+
+    <script type="text/javascript">
+    main();
+    </script>
+
+    <div id="log"></div>
+
+    <h3>このシミュレーターについて</h3>
+    <ul>
+    <li>名古屋鉄道で使用されている駅自動放送を自由に組み立て、車内放送を流すシミュレーターを作りました。</li>
+    <li>
+      このシミュレーターは現在
+      <strong>ベータ版</strong>
+      で、仮公開中です。
+      <strong>収録素材(パーツ)はまだまだありますが、動作確認のため全ては用意していません</strong>
+      。
+    </li>
+    <li>左側のセレクトボックス内の選択肢から分節を選択し、ダブルクリックまたは追加ボタンで文節を追加します。文章を組み上げた後は、放送開始ボタンを押すと、放送が開始します。</li>
+    <li>文節の順番を入れ替えたい場合は、右側のテキストボックスを行単位で選択し、カット＆ペーストで移動してください。行中の文字列を変更すると正しく再生されません。</li>
+    <li>右側のテキストボックスの内容を別途保存しておき、次回読み込み時に右側のテキストボックスに貼り付け、組立作業を途中から再開することもできます。</li>
+    <li>
+      パーツ名称の最後にあるものは
+      <strong>管理識別用</strong>
+      のものです。
+    </li>
+    </ul>
+
+    <h3>このページについて</h3>
+    <ul>
+    このページ及びシミュレーターは、yoshi223様が作成された自動放送シミュレーターのプログラムから作成しました。
+    <br>
+    ▼URL▼
+    <br>
+    <a href="http://r113.web.fc2.com/p/announce/jrw-osaka-loop/index.html" target="_blank">http://r113.web.fc2.com/p/announce/jrw-osaka-loop/index.html</a>
+    </ul>
+  </div>
+  <div id="menu" class="heightLine" style="height: 5000px;">
+    <ul>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">トップ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/profile/">プロフィール</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/meitetsuannounce/">シミュレーター</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/inquiry/">お問い合わせ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/recruiting/">募集</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/links/">リンク</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/termsofuse/">利用規約とお願い</a>
+      <a href="https://ameblo.jp/yiyu-kamo/">ブログ</a>
+    </ul>
+  </div>
+  <div id="footer">
+    <p>Copyright © 2024 いゆかも工房 All rights reserved.</p>
+  </div>
+</div>
+</body>
+</html>
