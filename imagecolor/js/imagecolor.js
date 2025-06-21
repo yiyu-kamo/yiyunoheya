@@ -70,14 +70,13 @@ function analyzeImage(file) {
       }
 
       const sortedColors = Object.entries(colorCount).sort((a, b) => b[1] - a[1]);
-
       const labels = sortedColors.map(([hex]) => hex);
       const counts = sortedColors.map(([, count]) => count);
       const total = counts.reduce((a, b) => a + b, 0);
 
-      drawPieChart(labels.slice(0, 10), counts.slice(0, 10));
-      drawBarChart(labels, counts);
-      drawColorTable(sortedColors, total);
+      drawPieChart(labels.slice(0, 10), counts.slice(0, 10)); // 円グラフは上位10色
+      drawBarChart(labels, counts); // 全色棒グラフ
+      drawColorTable(sortedColors, total); // テーブルも全色
       removeLoader();
     };
     img.src = e.target.result;
@@ -118,13 +117,15 @@ function drawBarChart(labels, data) {
   const wrapper = document.getElementById("barChartWrapper");
   if (wrapper) {
     wrapper.style.overflowX = "auto";
-    wrapper.style.paddingBottom = "12px";
+    wrapper.style.maxHeight = "500px";
   }
+
   const ctx = document.getElementById("barChart")?.getContext("2d");
   if (!ctx) return;
   if (window.barChart && typeof window.barChart.destroy === "function") {
     window.barChart.destroy();
   }
+
   window.barChart = new Chart(ctx, {
     type: "bar",
     data: {
@@ -137,6 +138,7 @@ function drawBarChart(labels, data) {
       indexAxis: "x",
       scales: {
         y: { beginAtZero: true },
+        x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } },
       },
     },
   });
