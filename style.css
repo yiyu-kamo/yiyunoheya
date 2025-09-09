@@ -34,7 +34,7 @@ textarea{
 #header{
 	text-align:left ;
 	height: 100px;
-	background-color:rgba(0,78,162,0.9) ;
+	background-color:rgba(0,78,162,0.5) ;
 	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#aa000000,EndColorStr=#aa000000);
     font-family: 'Noto Sans', sans-serif;
 }
@@ -53,7 +53,7 @@ textarea{
 	text-align: left;
 	min-height: 500px;
 	height: auto;
-	background-color:rgba(255,255,255,0.9) ;
+	background-color:rgba(255,255,255,0.5) ;
 	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#eeffffff,EndColorStr=#eeffffff);
     font-family: 'Noto Sans', sans-serif;
 }
@@ -88,7 +88,7 @@ textarea{
 	height: auto;
 	margin: 0px;
 	padding: 0px;
-	background-color:rgba(0,78,162,0.8) ;
+	background-color:rgba(0,78,162,0.5) ;
 	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#ee000000,EndColorStr=#ee000000);
     text-align: center;
     font-family: 'Noto Sans', sans-serif;
@@ -123,7 +123,7 @@ textarea{
     font-size: 0.8em;
 	text-align: center;
 	padding: 0.1em 0;
-	background-color:rgba(0,78,162,0.8) ;
+	background-color:rgba(0,78,162,0.5) ;
 	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#aa000000,EndColorStr=#aa000000);
 }
 
