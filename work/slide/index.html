@@ -27,63 +27,87 @@
 </head>
 <body>
 <div id="wrapper">
+
+
+    <h3>作ったもの</h3>
+    <ul>
+      <li><a href="https://yiyu-kamo.github.io/yiyunoheya/work/meitetsuannounce/">名古屋鉄道車内アナウンスシミュレーター</a></li>
+      <li><a href="https://yiyu-kamo.github.io/yiyunoheya/work/imagecolor/">画像の色をグラフ化</a></li>
+      <li><a href="https://yiyu-kamo.github.io/yiyunoheya/work/aramakusarailway/">ARあまくさ鉄道</a></li>
+      <li><a href="https://yiyu-kamo.github.io/yiyunoheya/work/marubatsu/">絶対に勝てないマルバツゲーム</a></li>
+      <li><a href="https://yiyu-kamo.github.io/yiyunoheya/work/slide/">スライドパズル</a></li>
+      <li><a href="https://hokumelo.github.io/">ほくりく駅メロ図鑑</a></li>
+      <li><a href="https://hokurd.github.io/">ほくりく道路図鑑</a></li>
+      <li><a href="https://hokuriv.github.io/">ほくりく河川図鑑</a></li>
+    </ul>
+  </div>
+  <div id="menu" class="heightLine" style="height: 500px;">
+    <ul>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">トップ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/profile/">プロフィール</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/work/">作ったもの</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/inquiry/">お問い合わせ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/recruiting/">募集</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/links/">リンク</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/termsofuse/">利用規約とお願い</a>
+      <a href="https://ameblo.jp/yiyu-kamo/">ブログ</a>
+    </ul>
+  </div>
+  <div id="footer">
+    <p>Copyright © いゆかも工房 All rights reserved.</p>
+  </div>
+
   <div id="header">
     <h1>
-      <a href="index.html">いゆのへや</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">いゆのへや</a>
     </h1>
     <h2>名古屋鉄道の車内放送シミュレーターなど</h2>
   </div>
   <div id="contents" class="heightLine" style="height: 800px;">
-    <div>
-        <div>
-            <h3>スライドパズル</h3>
-            <p>ピースを動かして、元の写真に戻しましょう。</p>
+    <p class="tree_menu">
+    <hr>
+    <h3>スライドパズル</h3>
+    <p>ピースを動かして、元の写真に戻しましょう。</p>
+      
+    <div class="flex items-center justify-between w-full max-w-md px-4">
+        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-neutral-100">
+            <i data-lucide="move" class="w-4 h-4 text-indigo-500"></i>
+            <span class="font-medium text-neutral-600">手数: <span id="move-count">0</span></span>
         </div>
+            
+        <div class="flex gap-2">
+            <button onclick="changeImage()" class="flex items-center gap-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 rounded-md text-sm font-medium transition-colors">
+                <i data-lucide="image" class="w-4 h-4"></i>
+                <span>違う景色</span>
+            </button>
+            <button onclick="initGame()" id="reset-btn" class="flex items-center gap-2 px-4 py-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-900 rounded-md text-sm font-medium transition-colors">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span>リセット</span>
+            </button>
+        </div>
+    </div>
 
-        <div class="flex flex-col items-center gap-8">
-            <div class="flex items-center justify-between w-full max-w-md px-4">
-                <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-neutral-100">
-                    <i data-lucide="move" class="w-4 h-4 text-indigo-500"></i>
-                    <span class="font-medium text-neutral-600">手数: <span id="move-count">0</span></span>
+    <div class="relative p-2 bg-white rounded-xl shadow-xl border border-neutral-100">
+        <div id="grid-container" class="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] bg-neutral-200 rounded-lg overflow-hidden border border-neutral-200/20">
+        </div>
+            
+        <div id="victory-overlay" class="hidden absolute inset-0 z-20 flex items-center justify-center bg-black/20 backdrop-blur-[2px] rounded-xl opacity-0 transition-opacity duration-500">
+            <div class="bg-white px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 transform scale-90 transition-transform duration-300" id="victory-modal">
+                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
+                    <i data-lucide="trophy" class="w-6 h-6"></i>
                 </div>
-                
-                <div class="flex gap-2">
-                    <button onclick="changeImage()" class="flex items-center gap-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 rounded-md text-sm font-medium transition-colors">
-                        <i data-lucide="image" class="w-4 h-4"></i>
-                        <span>違う景色</span>
-                    </button>
-                    <button onclick="initGame()" id="reset-btn" class="flex items-center gap-2 px-4 py-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-900 rounded-md text-sm font-medium transition-colors">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        <span>リセット</span>
-                    </button>
+                <div class="text-center">
+                    <h2 class="text-xl font-bold text-neutral-900">パズル完成！</h3>
+                    <p class="text-neutral-500 mt-1">おめでとうございます！</p>
                 </div>
-            </div>
-
-            <div class="relative p-2 bg-white rounded-xl shadow-xl border border-neutral-100">
-                <div id="grid-container" class="relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] bg-neutral-200 rounded-lg overflow-hidden border border-neutral-200/20">
-                </div>
-                
-                <div id="victory-overlay" class="hidden absolute inset-0 z-20 flex items-center justify-center bg-black/20 backdrop-blur-[2px] rounded-xl opacity-0 transition-opacity duration-500">
-                    <div class="bg-white px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 transform scale-90 transition-transform duration-300" id="victory-modal">
-                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
-                            <i data-lucide="trophy" class="w-6 h-6"></i>
-                        </div>
-                        <div class="text-center">
-                            <h2 class="text-xl font-bold text-neutral-900">パズル完成！</h3>
-                            <p class="text-neutral-500 mt-1">おめでとうございます！</p>
-                        </div>
-                        <button onclick="initGame()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
-                            もう一度遊ぶ
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <p>空きマスの隣のタイルをクリックして移動させ、<br>元の景色に戻してください。</p>
+                <button onclick="initGame()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                    もう一度遊ぶ
+                </button>
             </div>
         </div>
     </div>
+        
+    <p>空きマスの隣のタイルをクリックして移動させ、<br>元の景色に戻してください。</p>
   </div>
   <div id="menu" class="heightLine" style="height: 800px;">
     <ul>
