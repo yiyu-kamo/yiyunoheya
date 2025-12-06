@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="author" content="" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<link rel="icon" type="image/png" href="https://yiyu-kamo.github.io/yiyunoheya/image/icon.png">
+<title>トップ - いゆのへや</title>
+
+<link rel="stylesheet" href="https://yiyu-kamo.github.io/yiyunoheya/style.css" type="text/css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>絶対に負けるマルバツゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0a0a0a;
+      font-family: Arial, sans-serif;
+    }
+    .tictactoe-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .tictactoe-title {
+      color: #ff3333;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .tictactoe-subtitle {
+      color: #999;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .tictactoe-message {
+      color: white;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      min-height: 30px;
+    }
+    .tictactoe-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .tictactoe-cell {
+      width: 100%;
+      aspect-ratio: 1;
+      font-size: 32px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #2a2a2a;
+      color: white;
+    }
+    .tictactoe-cell:hover:not(:disabled) {
+      background: #3a3a3a;
+      transform: scale(1.05);
+    }
+    .tictactoe-cell:disabled {
+      cursor: not-allowed;
+    }
+    .tictactoe-cell.player {
+      background: #2563eb;
+    }
+    .tictactoe-cell.ai {
+      background: #dc2626;
+    }
+    .tictactoe-cell.winning {
+      box-shadow: 0 0 20px #fbbf24;
+    }
+    .tictactoe-reset {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: #dc2626;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .tictactoe-reset:hover {
+      background: #b91c1c;
+    }
+    .tictactoe-hint {
+      color: #666;
+      text-align: center;
+      font-size: 12px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+<div id="wrapper">
+  <div id="header">
+    <h1>
+      <a href="index.html">いゆのへや</a>
+    </h1>
+    <h2>名古屋鉄道の車内放送シミュレーターなど</h2>
+  </div>
+  <div id="menu">
+    <ul>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">トップ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/profile/">プロフィール</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/work/">作ったもの</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/inquiry/">お問い合わせ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/recruiting/">募集</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/links/">リンク</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/termsofuse/">利用規約とお願い</a>
+      <a href="https://ameblo.jp/yiyu-kamo/">ブログ</a>
+    </ul>
+  </div>
+  <div id="footer">
+    <p>Copyright © いゆかも工房 All rights reserved.</p>
+  </div>
+</div>
+  <div id="game-container"></div>
+
+  <script>
+    class UnbeatableTicTacToe {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) {
+          console.error('要素 #' + containerId + ' が見つかりません');
+          return;
+        }
+        
+        this.board = Array(9).fill(null);
+        this.isGameOver = false;
+        this.winner = null;
+        this.winPatterns = [
+          [0, 1, 2], [3, 4, 5], [6, 7, 8],
+          [0, 3, 6], [1, 4, 7], [2, 5, 8],
+          [0, 4, 8], [2, 4, 6]
+        ];
+        
+        this.init();
+      }
+
+      init() {
+        this.container.innerHTML = 
+          '<div class="tictactoe-container">' +
+            '<h1 class="tictactoe-title">絶対に負けるマルバツゲーム</h1>' +
+            '<p class="tictactoe-subtitle">完璧なAIに挑戦してください</p>' +
+            '<div class="tictactoe-message" id="message">あなたの番です（○）</div>' +
+            '<div class="tictactoe-board" id="board"></div>' +
+            '<button class="tictactoe-reset" id="reset">もう一度挑戦する</button>' +
+            '<p class="tictactoe-hint">ヒント：このAIは完璧なので、絶対に勝てません😈</p>' +
+          '</div>';
+        
+        var self = this;
+        this.messageEl = this.container.querySelector('#message');
+        this.boardEl = this.container.querySelector('#board');
+        this.resetBtn = this.container.querySelector('#reset');
+        
+        this.renderBoard();
+        this.resetBtn.addEventListener('click', function() {
+          self.reset();
+        });
+      }
+
+      renderBoard() {
+        var self = this;
+        this.boardEl.innerHTML = '';
+        this.board.forEach(function(cell, index) {
+          var btn = document.createElement('button');
+          btn.className = 'tictactoe-cell';
+          btn.textContent = cell || '';
+          btn.disabled = cell !== null || self.isGameOver;
+          
+          if (cell === '○') btn.classList.add('player');
+          if (cell === '×') btn.classList.add('ai');
+          if (self.winner && self.winner.line && self.winner.line.includes(index)) {
+            btn.classList.add('winning');
+          }
+          
+          btn.addEventListener('click', function() {
+            self.handleClick(index);
+          });
+          self.boardEl.appendChild(btn);
+        });
+      }
+
+      handleClick(index) {
+        if (this.board[index] || this.isGameOver) return;
+
+        var self = this;
+        this.board[index] = '○';
+        this.renderBoard();
+
+        var result = this.checkWinner();
+        if (result) {
+          this.endGame(result);
+          return;
+        }
+
+        this.messageEl.textContent = 'AIが考えています...';
+        
+        setTimeout(function() {
+          var aiMove = self.getBestMove();
+          self.board[aiMove] = '×';
+          self.renderBoard();
+
+          var aiResult = self.checkWinner();
+          if (aiResult) {
+            self.endGame(aiResult);
+          } else {
+            self.messageEl.textContent = 'あなたの番です（○）';
+          }
+        }, 500);
+      }
+
+      checkWinner() {
+        for (var i = 0; i < this.winPatterns.length; i++) {
+          var pattern = this.winPatterns[i];
+          var a = pattern[0];
+          var b = pattern[1];
+          var c = pattern[2];
+          if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+            return { winner: this.board[a], line: pattern };
+          }
+        }
+        var allFilled = true;
+        for (var j = 0; j < this.board.length; j++) {
+          if (this.board[j] === null) {
+            allFilled = false;
+            break;
+          }
+        }
+        if (allFilled) {
+          return { winner: 'draw', line: null };
+        }
+        return null;
+      }
+
+      endGame(result) {
+        this.isGameOver = true;
+        this.winner = result;
+        this.renderBoard();
+        
+        if (result.winner === 'draw') {
+          this.messageEl.textContent = '引き分けです！';
+        } else if (result.winner === '×') {
+          this.messageEl.textContent = result.winner + 'の勝ちです！あなたの負けです😈';
+        } else {
+          this.messageEl.textContent = result.winner + 'の勝ちです！';
+        }
+      }
+
+      minimax(squares, depth, isMaximizing) {
+        var tempBoard = this.board;
+        this.board = squares;
+        var result = this.checkWinner();
+        this.board = tempBoard;
+        
+        if (result) {
+          if (result.winner === '×') return 10 - depth;
+          if (result.winner === '○') return depth - 10;
+          return 0;
+        }
+
+        if (isMaximizing) {
+          var best = -Infinity;
+          for (var i = 0; i < 9; i++) {
+            if (!squares[i]) {
+              squares[i] = '×';
+              best = Math.max(best, this.minimax(squares, depth + 1, false));
+              squares[i] = null;
+            }
+          }
+          return best;
+        } else {
+          var best = -Infinity;
+          for (var i = 0; i < 9; i++) {
+            if (!squares[i]) {
+              squares[i] = '○';
+              best = Math.min(best, this.minimax(squares, depth + 1, true));
+              squares[i] = null;
+            }
+          }
+          return best;
+        }
+      }
+
+      getBestMove() {
+        var bestScore = -Infinity;
+        var move = -1;
+        var squares = this.board.slice();
+        
+        for (var i = 0; i < 9; i++) {
+          if (!squares[i]) {
+            squares[i] = '×';
+            var score = this.minimax(squares, 0, false);
+            squares[i] = null;
+            if (score > bestScore) {
+              bestScore = score;
+              move = i;
+            }
+          }
+        }
+        return move;
+      }
+
+      reset() {
+        this.board = Array(9).fill(null);
+        this.isGameOver = false;
+        this.winner = null;
+        this.messageEl.textContent = 'あなたの番です（○）';
+        this.renderBoard();
+      }
+    }
+
+    new UnbeatableTicTacToe('game-container');
+  </script>
+</body>
+</html>
