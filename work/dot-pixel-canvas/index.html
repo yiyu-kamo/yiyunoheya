@@ -84,33 +84,35 @@
   </div>
   <div id="contents" class="heightLine" style="height: 1000px;">
     <h3>ぴくせる日記</h3>
-    <div class="game-container">
-      <div class="title-label">ぴくせる日記</div>
-      <div class="grid" id="canvas"></div>
-      
-      <div class="picker-container">
-        <div class="picker-label">色を選択</div>
-        <div id="currentColorDisplay"></div>
-        <input type="color" id="realColorPicker" value="#e9194b">
+    <ul>
+      <div class="game-container">
+        <div class="title-label">ぴくせる日記</div>
+        <div class="grid" id="canvas"></div>
+        
+        <div class="picker-container">
+          <div class="picker-label">色を選択</div>
+          <div id="currentColorDisplay"></div>
+          <input type="color" id="realColorPicker" value="#e9194b">
+        </div>
+    
+        <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5文字迄)" maxlength="5">
+        <button class="btn" id="exchangeBtn">交換する</button>
       </div>
   
-      <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5文字迄)" maxlength="5">
-      <button class="btn" id="exchangeBtn">交換する</button>
-    </div>
-  
-    <div class="album-section">
-      <div class="album-title">アルバム</div>
-      <div class="album-grid" id="albumList"></div>
-    </div>
-  
-    <div id="modal" class="modal">
-      <div class="modal-content">
-        <div class="close-btn" id="closeModal">×</div>
-        <div class="big-grid" id="modalGrid"></div>
-        <div class="modal-title" id="modalTitle"></div>
-        <div class="modal-date" id="modalDate"></div>
+      <div class="album-section">
+        <div class="album-title">アルバム</div>
+        <div class="album-grid" id="albumList"></div>
       </div>
-    </div>
+    
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <div class="close-btn" id="closeModal">×</div>
+          <div class="big-grid" id="modalGrid"></div>
+          <div class="modal-title" id="modalTitle"></div>
+          <div class="modal-date" id="modalDate"></div>
+        </div>
+      </div>
+    </ul>
   </div>
   <div id="menu" class="heightLine" style="height: 1000px;">
     <ul>
