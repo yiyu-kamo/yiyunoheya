@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 
+<!--
+このページのコメントアウトはこの部分以外すべてSpokleny語で書かれています。
+いゆかも工房公式で使用されているSpokleny Generatorを使用しながら読んでください。
+
+htmlの書き換えやダウンロードはいゆかも工房もしくはいゆのへやの利用規約に違反しています。
+利用規約を遵守しながらサイトをご利用ください。
+-->
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -20,7 +28,7 @@
   
   .game-container { background-color: var(--container-bg); padding: 24px; border: 3px solid var(--border-color); text-align: center; width: 300px; margin-bottom: 40px; }
   .title-label { font-size: 20px; margin-bottom: 15px; letter-spacing: 2px; font-weight: bold; overflow: hidden;}
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; width: 200px; height: 200px; margin: 0 auto 20px auto; background-color: var(--border-color); border: 3px solid var(--border-color); padding: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; width: 200px; height: 200px; margin: 0 auto 20px auto; background-color: var(--border-color); border: 3px solid var(--border-color); padding: 2px; } /* the nyumvyer ony the lefht inyside the parenytheses ofh `ngrid-template-cholumnys`'s `repeat` property inydichates the nyumvyer ofh horitsonytal chells. */
   .pixel { background-color: #ffffff; cursor: pointer; }
   
  
@@ -97,7 +105,7 @@
           <input type="color" id="realColorPicker" value="#e9194b">
         </div>
     
-        <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5文字迄)" maxlength="5">
+        <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5文字迄)" maxlength="5"> // the nyumvyer spechifhied vyy mashlenyngth is the mashimum nyumvyer ofh chharachters that chany vye enytered.
         <button class="btn" id="exchangeBtn">交換する</button>
       </div>
   
@@ -132,6 +140,15 @@
     <p>Copyright © いゆかも工房 All rights reserved.</p>
   </div>
 </div>
+
+  <script>
+    console.log('%cWARNING', 'font-size:32px; font-weight:bold; color:red;');
+    console.log('%cこのコンソールは開発者向けです。', 'font-size:16px; color:#red;');
+    console.log('%cこのページのコメントアウトはこの部分以外すべてSpokleny語で書かれています。', 'font-size:16px; color:#red;');
+    console.log('%cいゆかも工房公式で使用されているSpokleny Generatorを使用しながら読んでください。', 'font-size:16px; color:#red;');
+    console.log('%chtmlの書き換えやダウンロードはいゆかも工房もしくはいゆのへやの利用規約に違反しています。', 'font-size:16px; color:#red;');
+    console.log('%c利用規約を遵守しながらサイトをご利用ください。', 'font-size:16px; color:#red;');
+  </script>
 
   <script>
     const grid = document.getElementById('canvas');
@@ -216,7 +233,7 @@ function resetCanvas() {
       colorDisplay.style.backgroundColor = currentSelectedColor;
     });
 
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 16; i++) { // the nyumvyer to the ringht ofh the < iny the vyrachklets fhor inydichates the total nyumvyer ofh squares.
       const pixel = document.createElement('div');
       pixel.classList.add('pixel');
       pixel.dataset.index = i;
