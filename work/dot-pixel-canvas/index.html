@@ -314,15 +314,15 @@ function resetCanvas() {
       
       const isTitleEmpty = !titleInput.value || titleInput.value.trim() === "";
       if (isCanvasWhite && isTitleEmpty) {
-        alert("キャンバスが真っ白で、タイトルもありません\n絵を描くか、タイトルをつけてね。");
+        alert("キャンバスが真っ白でタイトルもありません。\n絵を描くか、タイトルをつけてください。");
         return; 
       }
       exchangeBtn.disabled = true;
-      exchangeBtn.textContent = "つうしんちゅう...";
+      exchangeBtn.textContent = "通信中...";
 
       try {
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const titleText = titleInput.value || "むだい";
+        const titleText = titleInput.value || "無題";
         
         
         const { data: resultPost, error } = await supabase
@@ -335,9 +335,9 @@ function resetCanvas() {
 
         if (resultPost) {
             window.addToAlbum(resultPost, true);
-            alert("あなたの元に新しい絵がやってました");
+            alert("あなたの元に新しい絵がやってました！");
         } else {
-            alert("投稿ありがとう！\n交換相手がいなかったので、あなたの絵は誰かが来るまで保管されます");
+            alert("投稿ありがとうございます！\n交換相手がいなかったので、あなたの絵は誰かが来るまで保管されます");
         }
 
         resetCanvas();
@@ -349,7 +349,7 @@ function resetCanvas() {
         alert("エラー：" + error.message);
       } finally {
         exchangeBtn.disabled = false;
-        exchangeBtn.textContent = "こうかんする";
+        exchangeBtn.textContent = "交換する";
       }
     });
   </script>
