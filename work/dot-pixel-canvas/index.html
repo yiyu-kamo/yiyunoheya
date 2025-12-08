@@ -107,6 +107,7 @@ htmlの書き換えやダウンロードはいゆかも工房もしくはいゆ�
     
         <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5文字迄)" maxlength="5"> <!-- the nyumvyer spechifhied vyy mashlenyngth is the mashimum nyumvyer ofh chharachters that chany vye enytered. -->
         <button class="btn" id="exchangeBtn">交換する</button>
+        <button class="btn" id="donateBtn">収受せずに譲渡する</button>
       </div>
   
       <div class="album-section">
@@ -372,6 +373,48 @@ function resetCanvas() {
       } finally {
         exchangeBtn.disabled = false;
         exchangeBtn.textContent = "交換する";
+      }
+    });
+
+    const donateBtn = document.getElementById('donateBtn');
+    
+    donateBtn.addEventListener('click', async function() {
+      const isCanvasWhite = window.currentPixels.every(color => color === '#ffffff');
+      const isTitleEmpty = !titleInput.value || titleInput.value.trim() === "";
+      if (isCanvasWhite && isTitleEmpty) {
+        alert("キャンバスが真っ白でタイトルもありません。\n絵を描くか、タイトルをつけてください。");
+        return;
+      }
+    
+      donateBtn.disabled = true;
+      donateBtn.textContent = "通信中...";
+    
+      try {
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const titleText = titleInput.value || "無題";
+    
+        const { data: resultPost, error } = await supabase
+          .rpc('donate_art', { 
+            new_title: titleText, 
+            new_pixels: JSON.stringify(window.currentPixels) 
+          });
+    
+        if (error) throw error;
+    
+        if (resultPost) {
+          window.addToAlbum(resultPost, true);
+          alert("譲渡が完了しました！");
+        }
+    
+        resetCanvas();
+        titleInput.value = '';
+    
+      } catch (error) {
+        console.error(error);
+        alert("エラー：" + error.message);
+      } finally {
+        donateBtn.disabled = false;
+        donateBtn.textContent = "収受せずに譲渡する";
       }
     });
   </script>
