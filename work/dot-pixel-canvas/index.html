@@ -58,7 +58,7 @@
   .album-section { width: 100%; max-width: 600px; }
   .album-title { text-align: center; margin-bottom: 20px; font-size: 18px; border-bottom: 3px solid var(--border-color); padding-bottom: 10px; font-weight: bold; }
   .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-  .album-item { background: #fff; padding: 10px; border: 3px solid var(--border-color); animation: fadeIn 0.5s ease; cursor: pointer; transition: transform 0.1s; }
+  .album-item { background: #fff; padding: 10px; border: 3px solid var(--border-color); animation: fadeIn 0.5s ease; cursor: pointer; transition: transform 0.1s; overflow: hidden; }
   .album-item:hover { transform: scale(1.05); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; width: 80px; height: 80px; background-color: var(--border-color); border: 2px solid var(--border-color); margin-bottom: 8px; padding: 1px; }
