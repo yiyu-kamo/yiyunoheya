@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html lang="ja">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>4x4 Pixel Diary</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="author" content="" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<link rel="icon" type="image/png" href="https://yiyu-kamo.github.io/yiyunoheya/image/icon.png">
+<title>ぴくせる日記 - いゆのへや</title>
+
+<link rel="stylesheet" href="https://yiyu-kamo.github.io/yiyunoheya/style.css" type="text/css">
+
+
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
   
   :root { --border-color: #222; --inactive-border: #d4d4d4; --bg-color: #fffbf0; --container-bg: #ffffff; }
@@ -69,34 +78,58 @@
 </style>
 </head>
 <body>
-
-  <div class="game-container">
-    <div class="title-label">いまのきぶん</div>
-    <div class="grid" id="canvas"></div>
-    
-    <div class="picker-container">
-      <div class="picker-label">いろをえらぶ →</div>
-      <div id="currentColorDisplay"></div>
-      <input type="color" id="realColorPicker" value="#ffb7b2">
+<div id="wrapper">
+  <div id="header">
+    <h1>
+      <a href="index.html">いゆのへや</a>
+    </h1>
+    <h2>名古屋鉄道の車内放送シミュレーターなど</h2>
+  </div>
+  <div id="contents" class="heightLine" style="height: 800px;">
+    <div class="game-container">
+      <div class="title-label">いまのきぶん</div>
+      <div class="grid" id="canvas"></div>
+      
+      <div class="picker-container">
+        <div class="picker-label">いろをえらぶ →</div>
+        <div id="currentColorDisplay"></div>
+        <input type="color" id="realColorPicker" value="#ffb7b2">
+      </div>
+  
+      <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5もじまで)" maxlength="5">
+      <button class="btn" id="exchangeBtn">こうかんする</button>
     </div>
-
-    <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5もじまで)" maxlength="5">
-    <button class="btn" id="exchangeBtn">こうかんする</button>
-  </div>
-
-  <div class="album-section">
-    <div class="album-title">アルバム</div>
-    <div class="album-grid" id="albumList"></div>
-  </div>
-
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <div class="close-btn" id="closeModal">×</div>
-      <div class="big-grid" id="modalGrid"></div>
-      <div class="modal-title" id="modalTitle"></div>
-      <div class="modal-date" id="modalDate"></div>
+  
+    <div class="album-section">
+      <div class="album-title">アルバム</div>
+      <div class="album-grid" id="albumList"></div>
+    </div>
+  
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <div class="close-btn" id="closeModal">×</div>
+        <div class="big-grid" id="modalGrid"></div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-date" id="modalDate"></div>
+      </div>
     </div>
   </div>
+  <div id="menu" class="heightLine" style="height: 800px;">
+    <ul>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">トップ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/profile/">プロフィール</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/work/">作ったもの</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/inquiry/">お問い合わせ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/recruiting/">募集</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/links/">リンク</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/termsofuse/">利用規約とお願い</a>
+      <a href="https://ameblo.jp/yiyu-kamo/">ブログ</a>
+    </ul>
+  </div>
+  <div id="footer">
+    <p>Copyright © いゆかも工房 All rights reserved.</p>
+  </div>
+</div>
 
   <script>
     const grid = document.getElementById('canvas');
@@ -322,6 +355,5 @@ function resetCanvas() {
       }
     });
   </script>
-
 </body>
 </html>
