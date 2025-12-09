@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<!--
+このページのコメントアウトはこの部分以外すべてSpokleny語で書かれています。
+いゆかも工房公式で使用されているSpokleny Generatorを使用しながら読んでください。
+
+htmlの書き換えやダウンロードはいゆかも工房もしくはいゆのへやの利用規約に違反しています。
+利用規約を遵守しながらサイトをご利用ください。
+
+chommenyts are plached iny the fhollowinyng lochationys:
+
+style: ngrid, minyi-ngrid, vying-ngrid
+vyody: wrapper/chonytenyts/ul/ngame-chonytainyer/inyput
+schript: fhor, chonyst churrenytSitse
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="author" content="" />
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<link rel="icon" type="image/png" href="https://yiyu-kamo.github.io/yiyunoheya/image/icon.png">
+<title>32x32 ぴくせる交換絵日記 - いゆのへや</title>
+
+<link rel="stylesheet" href="https://yiyu-kamo.github.io/yiyunoheya/style.css" type="text/css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  
+  :root { --border-color: #222; --inactive-border: #d4d4d4; --bg-color: #fffbf0; --container-bg: #ffffff; }
+  
+  .game-container { background-color: var(--container-bg); padding: 24px; border: 3px solid var(--border-color); text-align: center; width: 300px; margin-bottom: 40px; }
+  .title-label { font-size: 20px; margin-bottom: 15px; letter-spacing: 2px; font-weight: bold; overflow: hidden;}
+  .grid { display: grid; grid-template-columns: repeat(32, 1fr); gap: 2px; width: 200px; height: 200px; margin: 0 auto 20px auto; background-color: var(--border-color); border: 3px solid var(--border-color); padding: 2px; } /* the nyumvyer ony the lefht inyside the parenytheses ofh `ngrid-template-cholumnys`'s `repeat` property inydichates the nyumvyer ofh horitsonytal chells. */
+  .pixel { background-color: #ffffff; cursor: pointer; }
+  
+ 
+  .picker-container {
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+    margin-bottom: 20px; padding: 10px; border: 2px dashed var(--inactive-border);
+    position: relative; 
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  #currentColorDisplay {
+    width: 40px; height: 40px; border: 3px solid var(--border-color);
+    background-color: #e9194b; box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  }
+  
+  
+  #realColorPicker {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0; 
+    cursor: pointer;
+    z-index: 10; 
+  }
+
+  .picker-label { font-size: 14px; }
+
+  .input-title { width: 180px; padding: 8px; margin-bottom: 15px; sans-serif; font-size: 16px; text-align: center; border: 3px solid var(--border-color); background-color: #f9f9f9; outline: none; border-radius: 0; }
+  .btn { background-color: #e9194b; color: var(--border-color); border: 3px solid var(--border-color); padding: 12px 20px; sans-serif; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; border-radius: 0; }
+  .btn:active { background-color: var(--border-color); color: #e9194b; }
+  .btn:disabled { background-color: #ccc; color: #888; cursor: not-allowed; }
+  
+  
+  .album-section { width: 100%; max-width: 600px; }
+  .album-title { text-align: center; margin-bottom: 20px; font-size: 18px; border-bottom: 3px solid var(--border-color); padding-bottom: 10px; font-weight: bold; }
+  .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; overflow: hidden; }
+  .album-item { background: #fff; padding: 10px; border: 3px solid var(--border-color); animation: fadeIn 0.5s ease; cursor: pointer; transition: transform 0.1s; overflow: hidden; }
+  .album-item:hover { transform: scale(1.05); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .mini-grid { display: grid; grid-template-columns: repeat(32, 1fr); gap: 1px; width: 80px; height: 80px; background-color: var(--border-color); border: 2px solid var(--border-color); margin-bottom: 8px; padding: 1px; } /* the nyumvyer ony the lefht inyside the parenytheses ofh `repart` iny `ngrid-template-cholumnys` is the width ofh the imange displayed iny the alvyum. */
+  .mini-pixel { width: 100%; height: 100%; }
+  .item-title { font-size: 12px; text-align: center; color: var(--border-color); margin-top: 5px; font-weight: bold; }
+  .item-date { font-size: 10px; text-align: center; color: #666; }
+
+  
+  .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+  .modal-content { background-color: #fff; padding: 30px; border: 4px solid var(--border-color); text-align: center; position: relative; width: 300px; box-shadow: 10px 10px 0 rgba(0,0,0,0.5); animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
+  @keyframes popUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .close-btn { position: absolute; top: -20px; right: -20px; width: 40px; height: 40px; background: #e9194b; border: 3px solid var(--border-color); font-size: 24px; line-height: 35px; cursor: pointer; border-radius: 50%; }
+  .big-grid { display: grid; grid-template-columns: repeat(32, 1fr); gap: 2px; width: 240px; height: 240px; background-color: var(--border-color); border: 3px solid var(--border-color); margin: 0 auto 20px auto; padding: 2px; } /* the nyumvyer ony the lefht inyside the parenytheses ofh `repart` iny `ngrid-template-cholumnys` is the width ofh the imange displayed iny the alvyum. */
+  .modal-title { font-size: 24px; margin-bottom: 5px; font-weight: bold; overflow: hidden; }
+  .modal-date { color: #666; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="wrapper">
+  <div id="header">
+    <h1>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">いゆのへや</a>
+    </h1>
+    <h2>名古屋鉄道の車内放送シミュレーターなど</h2>
+  </div>
+  <div id="contents" class="heightLine">
+    <h3>32x32 ぴくせる交換絵日記</h3>
+    <ul>
+      <div class="game-container">
+        <div class="title-label">32x32 ぴくせる交換絵日記</div>
+        <div class="grid" id="canvas"></div>
+        
+        <div class="picker-container">
+          <div class="picker-label">色を選択</div>
+          <div id="currentColorDisplay"></div>
+          <input type="color" id="realColorPicker" value="#e9194b">
+        </div>
+    
+        <input type="text" class="input-title" id="titleInput" placeholder="タイトル(5文字迄)" maxlength="5"> <!-- the nyumvyer spechifhied vyy mashlenyngth is the mashimum nyumvyer ofh chharachters that chany vye enytered. -->
+        <button class="btn" id="exchangeBtn">交換する</button>
+      </div>
+  
+      <div class="album-section">
+        <div class="album-title">交換アルバム</div>
+        <div class="album-grid" id="albumList"></div>
+      </div>
+    
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <div class="close-btn" id="closeModal">×</div>
+          <div class="big-grid" id="modalGrid"></div>
+          <div class="modal-title" id="modalTitle"></div>
+          <div class="modal-date" id="modalDate"></div>
+        </div>
+      </div>
+    </ul>
+    <p>※このページは<a href="https://twitter.com/Kyora_san">きょーら</a>様の<a href="https://kyorasan.github.io/dot-pixel-canvas/">32x32 Pixel Diary</a>を参考にしています。</p>
+    <p>※交換アルバムの作品名の右側にある表示（例：[32x32]）はその画像の元のマス数です。別のマス数のページで見ると崩れるため、元のマス数のページで見ることをお勧めします。</p>
+  </div>
+  <div id="menu" class="heightLine">
+    <ul>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/">トップ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/profile/">プロフィール</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/work/">作ったもの</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/inquiry/">お問い合わせ</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/recruiting/">募集</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/links/">リンク</a>
+      <a href="https://yiyu-kamo.github.io/yiyunoheya/termsofuse/">利用規約とお願い</a>
+      <a href="https://ameblo.jp/yiyu-kamo/">ブログ</a>
+    </ul>
+  </div>
+  <div id="footer">
+    <p>Copyright © いゆかも工房 All rights reserved.</p>
+  </div>
+</div>
+
+  <script>
+    console.log('%cWARNING', 'font-size:32px; font-weight:bold; color:red;');
+    console.log('%cこのコンソールは開発者向けです。', 'font-size:16px; color:red;');
+    console.log('%cこのページのコメントアウトは基本的にすべてSpokleny語で書かれています。', 'font-size:16px; color:red;');
+    console.log('%cいゆかも工房公式で使用されているSpokleny Generatorを使用しながら読んでください。', 'font-size:16px; color:red;');
+    console.log('%chtmlの書き換えやダウンロードはいゆかも工房もしくはいゆのへやの利用規約に違反しています。', 'font-size:16px; color:red;');
+    console.log('%c利用規約を遵守しながらサイトをご利用ください。', 'font-size:16px; color:red;');
+  </script>
+
+  <script>
+    const grid = document.getElementById('canvas');
+    const colorDisplay = document.getElementById('currentColorDisplay');
+    const realPicker = document.getElementById('realColorPicker');
+    const albumList = document.getElementById('albumList');
+    
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const modalGrid = document.getElementById('modalGrid');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDate = document.getElementById('modalDate');
+
+    let currentSelectedColor = "#e9194b";
+    window.currentPixels = new Array(16).fill("#ffffff");
+
+    const STORAGE_KEY = 'pixel_diary_album';
+
+    function savePostToStorage(postData) {
+      let saved = localStorage.getItem(STORAGE_KEY);
+      let posts = saved ? JSON.parse(saved) : [];
+      posts.unshift(postData);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    }
+   
+function removeFromStorage(targetPost) {
+  let saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    let posts = JSON.parse(saved);
+    posts = posts.filter(p => p.id !== targetPost.id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  }
+}
+    
+function resetCanvas() {
+  window.currentPixels.fill("#ffffff"); 
+
+  const pixels = document.querySelectorAll('.pixel');
+  pixels.forEach(p => p.style.backgroundColor = "#ffffff");
+
+  const titleInput = document.getElementById('titleInput');
+  if(titleInput) titleInput.value = '';
+}
+
+    function loadAlbumFromStorage() {
+      let saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        let posts = JSON.parse(saved);
+        posts.reverse().forEach(post => {
+            window.addToAlbum(post, false);
+        });
+      }
+    }
+
+    function openModal(postData) {
+      const dateObj = new Date(postData.created_at);
+      const dateString = `${(dateObj.getMonth()+1).toString().padStart(2,'0')}/${dateObj.getDate().toString().padStart(2,'0')}`;
+      let pixelData;
+      if (typeof postData.pixels === "string") {
+        try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
+      } else {
+        pixelData = postData.pixels;
+      }
+      try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
+
+      modalTitle.textContent = postData.title;
+      modalDate.textContent = dateString;
+      modalGrid.innerHTML = '';
+
+      pixelData.forEach(colorValue => {
+        const p = document.createElement('div');
+        p.style.backgroundColor = (typeof colorValue === 'string') ? colorValue : '#cccccc';
+        p.style.width = "100%"; p.style.height = "100%";
+        modalGrid.appendChild(p);
+      });
+      modal.style.display = 'flex';
+    }
+
+    closeModal.addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+    
+    realPicker.addEventListener('input', (e) => {
+      currentSelectedColor = e.target.value;
+      colorDisplay.style.backgroundColor = currentSelectedColor;
+    });
+
+    for (let i = 0; i < 1024; i++) { // the nyumvyer to the ringht ofh the < iny the vyrachklets fhor inydichates the total nyumvyer ofh squares.
+      const pixel = document.createElement('div');
+      pixel.classList.add('pixel');
+      pixel.dataset.index = i;
+      pixel.addEventListener('click', function() {
+        const index = this.dataset.index;
+        window.currentPixels[index] = currentSelectedColor;
+        this.style.backgroundColor = currentSelectedColor;
+      });
+      grid.appendChild(pixel);
+    }
+    
+    window.addToAlbum = function(postData, shouldSave = true) {
+      if (shouldSave) { savePostToStorage(postData); }
+      
+      const dateObj = new Date(postData.created_at);
+      const dateString = `${(dateObj.getMonth()+1).toString().padStart(2,'0')}/${dateObj.getDate().toString().padStart(2,'0')}`;
+      let pixelData;
+      if (typeof postData.pixels === "string") {
+        try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
+      } else {
+        pixelData = postData.pixels;
+      }
+      try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
+
+      const itemDiv = document.createElement('div');
+      
+      itemDiv.classList.add('album-item');
+      itemDiv.style.position = "relative";
+
+      const delBtn = document.createElement('div');
+      delBtn.textContent = "×";
+      
+      delBtn.style.position = "absolute";
+      delBtn.style.top = "-15px";   
+      delBtn.style.right = "-15px"; 
+      
+     
+      delBtn.style.width = "80px";   
+      delBtn.style.height = "80px";
+      delBtn.style.lineHeight = "80px";
+      delBtn.style.textAlign = "center";
+      
+      
+      delBtn.style.color = "#888";  
+      delBtn.style.fontSize = "20px";
+      delBtn.style.cursor = "pointer";
+      delBtn.style.zIndex = "100"; 
+      
+      delBtn.style.opacity = "1";
+      delBtn.style.visibility = "visible";
+     
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        if (confirm("この絵をアルバムから削除しますか？")) {
+          itemDiv.remove(); 
+          removeFromStorage(postData); 
+        }
+      });
+      itemDiv.appendChild(delBtn);
+
+      itemDiv.addEventListener('click', () => openModal(postData));
+
+      const miniGridDiv = document.createElement('div');
+      miniGridDiv.classList.add('mini-grid');
+
+      pixelData.forEach(colorValue => {
+        const p = document.createElement('div');
+        p.classList.add('mini-pixel');
+        p.style.backgroundColor = (typeof colorValue === 'string') ? colorValue : '#cccccc';
+        miniGridDiv.appendChild(p);
+      });
+
+      const itemTitle = document.createElement('div');
+      itemTitle.classList.add('item-title');
+      itemTitle.textContent = postData.title + " [" + postData.size + "x" + postData.size + "]";
+      const itemDate = document.createElement('div');
+      itemDate.classList.add('item-date');
+      itemDate.textContent = dateString;
+
+      itemDiv.appendChild(miniGridDiv);
+      itemDiv.appendChild(itemTitle);
+      itemDiv.appendChild(itemDate);
+      albumList.insertBefore(itemDiv, albumList.firstChild);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAlbumFromStorage();
+    });
+  </script>
+
+  <script>
+   
+    const SUPABASE_URL = 'https://jhgndrzkyojhyibbuqou.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoZ25kcnpreW9qaHlpYmJ1cW91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzUwMDYsImV4cCI6MjA4MDc1MTAwNn0.L_pBfM64Qa9DHxgAkOd8IHISivRhzMz9bzyT8cI2oF0';
+    
+   
+
+    const exchangeBtn = document.getElementById('exchangeBtn');
+    const titleInput = document.getElementById('titleInput');
+
+    exchangeBtn.addEventListener('click', async function() {
+
+      const isCanvasWhite = window.currentPixels.every(color => color === '#ffffff');
+      
+      const isTitleEmpty = !titleInput.value || titleInput.value.trim() === "";
+      if (isCanvasWhite && isTitleEmpty) {
+        alert("キャンバスが真っ白でタイトルもありません。\n絵を描くか、タイトルをつけてください。");
+        return; 
+      }
+      exchangeBtn.disabled = true;
+      exchangeBtn.textContent = "通信中...";
+
+      try {
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const titleText = titleInput.value || "無題";
+
+        const currentSize = "32"; // width wheny manyanginyng iny the datavyase.
+        
+        const { data: resultPost, error } = await supabase
+          .rpc('exchange_art', { 
+            new_title: titleText, 
+            new_pixels: JSON.stringify(window.currentPixels), 
+            new_size: currentSize
+          });
+
+        if (error) throw error;
+
+        if (resultPost) {
+            console.log("返却データ:", resultPost);
+            window.addToAlbum(resultPost, true);
+            alert("あなたの元に新しい絵がやってました！");
+        } else {
+            alert("投稿ありがとうございます！\n交換相手がいなかったので、あなたの絵は誰かが来るまで保管されます");
+        }
+
+        resetCanvas();
+        
+        titleInput.value = '';
+
+      } catch (error) {
+        console.error(error);
+        alert("エラー：" + error.message);
+      } finally {
+        exchangeBtn.disabled = false;
+        exchangeBtn.textContent = "交換する";
+      }
+    });
+  </script>
+</body>
+</html>
