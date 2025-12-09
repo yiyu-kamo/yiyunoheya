@@ -214,6 +214,11 @@ function resetCanvas() {
       const dateObj = new Date(postData.created_at);
       const dateString = `${(dateObj.getMonth()+1).toString().padStart(2,'0')}/${dateObj.getDate().toString().padStart(2,'0')}`;
       let pixelData;
+      if (typeof postData.pixels === "string") {
+        try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
+      } else {
+        pixelData = postData.pixels;
+      }
       try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
 
       modalTitle.textContent = postData.title;
@@ -258,6 +263,11 @@ function resetCanvas() {
       const dateObj = new Date(postData.created_at);
       const dateString = `${(dateObj.getMonth()+1).toString().padStart(2,'0')}/${dateObj.getDate().toString().padStart(2,'0')}`;
       let pixelData;
+      if (typeof postData.pixels === "string") {
+        try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
+      } else {
+        pixelData = postData.pixels;
+      }
       try { pixelData = JSON.parse(postData.pixels); } catch(e) { return; }
 
       const itemDiv = document.createElement('div');
@@ -364,6 +374,7 @@ function resetCanvas() {
         if (error) throw error;
 
         if (resultPost) {
+            console.log("返却データ:", resultPost);
             window.addToAlbum(resultPost, true);
             alert("あなたの元に新しい絵がやってました！");
         } else {
