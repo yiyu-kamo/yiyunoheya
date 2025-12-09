@@ -320,7 +320,7 @@ function resetCanvas() {
 
       const itemTitle = document.createElement('div');
       itemTitle.classList.add('item-title');
-      itemTitle.textContent = postData.title;
+      itemTitle.textContent = postData.title + " [" + postData.size + "x" + postData.size + "]";
       const itemDate = document.createElement('div');
       itemDate.classList.add('item-date');
       itemDate.textContent = dateString;
