@@ -357,7 +357,7 @@ function resetCanvas() {
         const { data: resultPost, error } = await supabase
           .rpc('exchange_art', { 
             new_title: titleText, 
-            new_pixels: JSON.stringify(window.currentPixels) 
+            new_pixels: JSON.stringify(window.currentPixels), 
             new_size: currentSize
           });
 
