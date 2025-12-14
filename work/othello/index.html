@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>絶対に勝てないオセロゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0a0a0a;
+      font-family: Arial, sans-serif;
+    }
+    .othello-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .othello-title {
+      color: #ff3333;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .othello-subtitle {
+      color: #999;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .othello-info {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      color: white;
+    }
+    .othello-score {
+      text-align: center;
+    }
+    .othello-score-label {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .othello-score-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .othello-message {
+      color: white;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      min-height: 30px;
+    }
+    .othello-board {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 2px;
+      background: #444;
+      padding: 2px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .othello-cell {
+      aspect-ratio: 1;
+      background: #2d7a2d;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .othello-cell:hover:not(:disabled) {
+      background: #3a9a3a;
+    }
+    .othello-cell:disabled {
+      cursor: not-allowed;
+    }
+    .othello-cell.valid {
+      background: #4db84d;
+    }
+    .othello-piece {
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      transition: all 0.3s;
+    }
+    .othello-piece.black {
+      background: radial-gradient(circle at 30% 30%, #444, #000);
+      box-shadow: inset -2px -2px 4px rgba(255,255,255,0.2);
+    }
+    .othello-piece.white {
+      background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2);
+    }
+    .othello-reset {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: #dc2626;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .othello-reset:hover {
+      background: #b91c1c;
+    }
+    .othello-hint {
+      color: #666;
+      text-align: center;
+      font-size: 12px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <script>
+    class UnbeatableOthello {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) {
+          console.error('要素 #' + containerId + ' が見つかりません');
+          return;
+        }
+        
+        this.board = this.createInitialBoard();
+        this.currentPlayer = 'black';
+        this.isGameOver = false;
+        this.directions = [
+          [-1, -1], [-1, 0], [-1, 1],
+          [0, -1],           [0, 1],
+          [1, -1],  [1, 0],  [1, 1]
+        ];
+        
+        this.init();
+      }
+
+      createInitialBoard() {
+        var board = [];
+        for (var i = 0; i < 8; i++) {
+          board[i] = [];
+          for (var j = 0; j < 8; j++) {
+            board[i][j] = null;
+          }
+        }
+        board[3][3] = 'white';
+        board[3][4] = 'black';
+        board[4][3] = 'black';
+        board[4][4] = 'white';
+        return board;
+      }
+
+      init() {
+        this.container.innerHTML = 
+          '<div class="othello-container">' +
+            '<h1 class="othello-title">絶対に勝てないオセロゲーム</h1>' +
+            '<p class="othello-subtitle">完璧なAIに挑戦してください</p>' +
+            '<div class="othello-info">' +
+              '<div class="othello-score">' +
+                '<div class="othello-score-label">あなた（黒）</div>' +
+                '<div class="othello-score-value" id="black-score">2</div>' +
+              '</div>' +
+              '<div class="othello-score">' +
+                '<div class="othello-score-label">AI（白）</div>' +
+                '<div class="othello-score-value" id="white-score">2</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="othello-message" id="message">あなたの番です（黒）</div>' +
+            '<div class="othello-board" id="board"></div>' +
+            '<button class="othello-reset" id="reset">もう一度挑戦する</button>' +
+            '<p class="othello-hint">ヒント：このAIは完璧なので、絶対に勝てません😈</p>' +
+          '</div>';
+        
+        var self = this;
+        this.messageEl = this.container.querySelector('#message');
+        this.boardEl = this.container.querySelector('#board');
+        this.resetBtn = this.container.querySelector('#reset');
+        this.blackScoreEl = this.container.querySelector('#black-score');
+        this.whiteScoreEl = this.container.querySelector('#white-score');
+        
+        this.renderBoard();
+        this.resetBtn.addEventListener('click', function() {
+          self.reset();
+        });
+      }
+
+      renderBoard() {
+        var self = this;
+        this.boardEl.innerHTML = '';
+        var validMoves = this.getValidMoves(this.currentPlayer);
+        
+        for (var i = 0; i < 8; i++) {
+          for (var j = 0; j < 8; j++) {
+            (function(row, col) {
+              var cell = document.createElement('button');
+              cell.className = 'othello-cell';
+              
+              var isValid = validMoves.some(function(move) {
+                return move.row === row && move.col === col;
+              });
+              
+              if (isValid && self.currentPlayer === 'black' && !self.isGameOver) {
+                cell.classList.add('valid');
+              }
+              
+              if (self.board[row][col]) {
+                var piece = document.createElement('div');
+                piece.className = 'othello-piece ' + self.board[row][col];
+                cell.appendChild(piece);
+              }
+              
+              cell.disabled = !isValid || self.currentPlayer !== 'black' || self.isGameOver;
+              
+              cell.addEventListener('click', function() {
+                self.handleClick(row, col);
+              });
+              
+              self.boardEl.appendChild(cell);
+            })(i, j);
+          }
+        }
+        
+        this.updateScore();
+      }
+
+      getValidMoves(player) {
+        var moves = [];
+        for (var i = 0; i < 8; i++) {
+          for (var j = 0; j < 8; j++) {
+            if (this.board[i][j] === null && this.getFlippedPieces(i, j, player).length > 0) {
+              moves.push({ row: i, col: j });
+            }
+          }
+        }
+        return moves;
+      }
+
+      getFlippedPieces(row, col, player) {
+        if (this.board[row][col] !== null) return [];
+        
+        var opponent = player === 'black' ? 'white' : 'black';
+        var flipped = [];
+        
+        for (var d = 0; d < this.directions.length; d++) {
+          var dir = this.directions[d];
+          var dr = dir[0];
+          var dc = dir[1];
+          var temp = [];
+          var r = row + dr;
+          var c = col + dc;
+          
+          while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            if (this.board[r][c] === null) break;
+            if (this.board[r][c] === opponent) {
+              temp.push({ row: r, col: c });
+            } else if (this.board[r][c] === player) {
+              if (temp.length > 0) {
+                flipped = flipped.concat(temp);
+              }
+              break;
+            }
+            r += dr;
+            c += dc;
+          }
+        }
+        
+        return flipped;
+      }
+
+      placePiece(row, col, player) {
+        var flipped = this.getFlippedPieces(row, col, player);
+        if (flipped.length === 0) return false;
+        
+        this.board[row][col] = player;
+        for (var i = 0; i < flipped.length; i++) {
+          this.board[flipped[i].row][flipped[i].col] = player;
+        }
+        return true;
+      }
+
+      handleClick(row, col) {
+        if (!this.placePiece(row, col, 'black')) return;
+        
+        this.renderBoard();
+        
+        var self = this;
+        setTimeout(function() {
+          if (self.checkGameOver()) return;
+          
+          self.currentPlayer = 'white';
+          self.messageEl.textContent = 'AIが考えています...';
+          
+          setTimeout(function() {
+            self.aiMove();
+            if (self.checkGameOver()) return;
+            
+            self.currentPlayer = 'black';
+            var validMoves = self.getValidMoves('black');
+            if (validMoves.length === 0) {
+              self.currentPlayer = 'white';
+              setTimeout(function() {
+                self.aiMove();
+                self.checkGameOver();
+              }, 500);
+            } else {
+              self.messageEl.textContent = 'あなたの番です（黒）';
+              self.renderBoard();
+            }
+          }, 500);
+        }, 300);
+      }
+
+      aiMove() {
+        var move = this.getBestMove();
+        if (move) {
+          this.placePiece(move.row, move.col, 'white');
+        }
+        this.renderBoard();
+      }
+
+      getBestMove() {
+        var validMoves = this.getValidMoves('white');
+        if (validMoves.length === 0) return null;
+        
+        var bestScore = -Infinity;
+        var bestMove = validMoves[0];
+        
+        for (var i = 0; i < validMoves.length; i++) {
+          var move = validMoves[i];
+          var score = this.evaluateMove(move.row, move.col);
+          if (score > bestScore) {
+            bestScore = score;
+            bestMove = move;
+          }
+        }
+        
+        return bestMove;
+      }
+
+      evaluateMove(row, col) {
+        var cornerWeight = 100;
+        var edgeWeight = 10;
+        var mobilityWeight = 5;
+        
+        var score = 0;
+        
+        var corners = [[0,0], [0,7], [7,0], [7,7]];
+        for (var i = 0; i < corners.length; i++) {
+          if (row === corners[i][0] && col === corners[i][1]) {
+            score += cornerWeight;
+          }
+        }
+        
+        if (row === 0 || row === 7 || col === 0 || col === 7) {
+          score += edgeWeight;
+        }
+        
+        var flipped = this.getFlippedPieces(row, col, 'white');
+        score += flipped.length * 2;
+        
+        var boardCopy = [];
+        for (var i = 0; i < 8; i++) {
+          boardCopy[i] = this.board[i].slice();
+        }
+        
+        boardCopy[row][col] = 'white';
+        for (var i = 0; i < flipped.length; i++) {
+          boardCopy[flipped[i].row][flipped[i].col] = 'white';
+        }
+        
+        var tempBoard = this.board;
+        this.board = boardCopy;
+        var opponentMoves = this.getValidMoves('black');
+        this.board = tempBoard;
+        
+        score -= opponentMoves.length * mobilityWeight;
+        
+        return score;
+      }
+
+      checkGameOver() {
+        var blackMoves = this.getValidMoves('black');
+        var whiteMoves = this.getValidMoves('white');
+        
+        if (blackMoves.length === 0 && whiteMoves.length === 0) {
+          this.endGame();
+          return true;
+        }
+        return false;
+      }
+
+      endGame() {
+        this.isGameOver = true;
+        var scores = this.countPieces();
+        
+        if (scores.black > scores.white) {
+          this.messageEl.textContent = 'あなたの勝ちです！';
+        } else if (scores.white > scores.black) {
+          this.messageEl.textContent = 'AIの勝ちです！あなたの負けです😈';
+        } else {
+          this.messageEl.textContent = '引き分けです！';
+        }
+        
+        this.renderBoard();
+      }
+
+      countPieces() {
+        var black = 0;
+        var white = 0;
+        for (var i = 0; i < 8; i++) {
+          for (var j = 0; j < 8; j++) {
+            if (this.board[i][j] === 'black') black++;
+            if (this.board[i][j] === 'white') white++;
+          }
+        }
+        return { black: black, white: white };
+      }
+
+      updateScore() {
+        var scores = this.countPieces();
+        this.blackScoreEl.textContent = scores.black;
+        this.whiteScoreEl.textContent = scores.white;
+      }
+
+      reset() {
+        this.board = this.createInitialBoard();
+        this.currentPlayer = 'black';
+        this.isGameOver = false;
+        this.messageEl.textContent = 'あなたの番です（黒）';
+        this.renderBoard();
+      }
+    }
+
+    new UnbeatableOthello('game-container');
+  </script>
+</body>
+</html>
